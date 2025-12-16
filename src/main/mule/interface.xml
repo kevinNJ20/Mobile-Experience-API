@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+      http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+      http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
+  <!-- APIkit Router Configuration -->
+  <apikit:config name="mobile-experience-api-config" 
+                  raml="mobile-experience-api.raml" 
+                  outboundHeadersMapName="outboundHeaders" 
+                  httpStatusVarName="httpStatus"/>
+
+  <!-- Main HTTP Listener with APIkit Router -->
+  <flow name="main">
+    <http:listener config-ref="HTTP_Listener_config" path="/api/*" doc:name="HTTP Listener"/>
+    <apikit:router config-ref="mobile-experience-api-config" doc:name="APIkit Router"/>
+    <error-handler>
+      <on-error-propagate type="APIKIT:NOT_FOUND" enableNotifications="true" logException="true" doc:name="On Error Propagate">
+        <ee:transform doc:name="Transform Error Response">
+          <ee:message>
+            <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  error: {
+    code: "NOT_FOUND",
+    message: "Resource not found",
+    timestamp: now()
+  }
+}]]></ee:set-payload>
+          </ee:message>
+        </ee:transform>
+        <http:response statusCode="404" doc:name="HTTP Response"/>
+      </on-error-propagate>
+      <on-error-propagate type="APIKIT:BAD_REQUEST" enableNotifications="true" logException="true" doc:name="On Error Propagate">
+        <ee:transform doc:name="Transform Error Response">
+          <ee:message>
+            <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  error: {
+    code: "BAD_REQUEST",
+    message: error.description default "Bad request",
+    timestamp: now()
+  }
+}]]></ee:set-payload>
+          </ee:message>
+        </ee:transform>
+        <http:response statusCode="400" doc:name="HTTP Response"/>
+      </on-error-propagate>
+      <on-error-propagate type="APIKIT:NOT_ACCEPTABLE" enableNotifications="true" logException="true" doc:name="On Error Propagate">
+        <ee:transform doc:name="Transform Error Response">
+          <ee:message>
+            <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  error: {
+    code: "NOT_ACCEPTABLE",
+    message: "Content type not acceptable",
+    timestamp: now()
+  }
+}]]></ee:set-payload>
+          </ee:message>
+        </ee:transform>
+        <http:response statusCode="406" doc:name="HTTP Response"/>
+      </on-error-propagate>
+      <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE" enableNotifications="true" logException="true" doc:name="On Error Propagate">
+        <ee:transform doc:name="Transform Error Response">
+          <ee:message>
+            <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  error: {
+    code: "UNSUPPORTED_MEDIA_TYPE",
+    message: "Unsupported media type",
+    timestamp: now()
+  }
+}]]></ee:set-payload>
+          </ee:message>
+        </ee:transform>
+        <http:response statusCode="415" doc:name="HTTP Response"/>
+      </on-error-propagate>
+      <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED" enableNotifications="true" logException="true" doc:name="On Error Propagate">
+        <ee:transform doc:name="Transform Error Response">
+          <ee:message>
+            <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  error: {
+    code: "METHOD_NOT_ALLOWED",
+    message: "Method not allowed",
+    timestamp: now()
+  }
+}]]></ee:set-payload>
+          </ee:message>
+        </ee:transform>
+        <http:response statusCode="405" doc:name="HTTP Response"/>
+      </on-error-propagate>
+    </error-handler>
+  </flow>
+
+  <!-- GET /customers/{customerGlobalId} -->
+  <flow name="get:\customers\{customerGlobalId}:mobile-experience-api-config">
+    <set-variable value="#[attributes.uriParams.customerGlobalId]" variableName="customerGlobalId" doc:name="Set Customer Global ID"/>
+    <flow-ref name="get-mobile-financial-summary-business-logic" doc:name="get-mobile-financial-summary-business-logic"/>
+  </flow>
+
+</mule>
+

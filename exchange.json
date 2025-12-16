@@ -1,0 +1,12 @@
+{
+  "main": "mobile-experience-api.raml",
+  "name": "Mobile Experience API",
+  "classifier": "raml",
+  "organizationId": "167d12fd-a524-4ceb-9804-cb9e9ac3cdc3",
+  "descriptorVersion": "1.0.0",
+  "groupId": "167d12fd-a524-4ceb-9804-cb9e9ac3cdc3",
+  "assetId": "mobile-experience-api",
+  "version": "1.0.0",
+  "apiVersion": "v1"
+}
+

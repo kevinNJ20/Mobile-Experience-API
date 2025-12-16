@@ -1,0 +1,80 @@
+#%RAML 1.0
+title: Mobile Experience API
+version: 1.0.0
+baseUri: http://localhost:8083/api/mobile
+mediaType: application/json
+
+documentation:
+  - title: Overview
+    content: API d'expérience mobile pour fournir une vue financière optimisée pour les applications mobiles
+
+types:
+  FinancialSummary:
+    type: object
+    properties:
+      customer:
+        type: object
+        properties:
+          globalId: string
+          customerNumber?: string
+          party:
+            type: object
+            properties:
+              firstName?: string
+              lastName?: string
+      accounts:
+        type: array
+        items:
+          type: object
+          properties:
+            accountNumber: string
+            accountType: string
+            balance?: number
+            currency?: string
+      cards:
+        type: array
+        items:
+          type: object
+          properties:
+            cardNumber: string
+            cardType: string
+            availableCredit?: number
+            creditLimit?: number
+      totalBalance?: number
+      totalAvailableCredit?: number
+  ErrorResponse:
+    type: object
+    properties:
+      error:
+        type: object
+        properties:
+          code: string
+          message: string
+
+/customers/{customerGlobalId}:
+  displayName: Customer Financial Summary
+  uriParameters:
+    customerGlobalId:
+      type: string
+      description: Identifiant global unique du client
+  get:
+    displayName: Get Mobile Financial Summary
+    description: Récupère un résumé financier optimisé pour mobile
+    responses:
+      200:
+        body:
+          application/json:
+            type: FinancialSummary
+      400:
+        body:
+          application/json:
+            type: ErrorResponse
+      404:
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        body:
+          application/json:
+            type: ErrorResponse
+
