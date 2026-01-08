@@ -16,7 +16,7 @@ http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/m
   <!-- Main HTTP Listener with APIkit Router -->
   <flow name="main">
     <http:listener config-ref="HTTP_Listener_config" path="/api/*" doc:name="HTTP Listener"/>
-    <apikit:router doc:name="APIkit Router" doc:id="36e7fa58-1ae8-4bee-9267-9cfa797feaab" config-ref="mobile-experience-api-config"/>
+    <apikit:router doc:name="APIkit Router" doc:id="4400807c-7998-41f0-83b5-3e21aaf9bc31" config-ref="mobile-experience-api-config"/>
 		<error-handler>
       <on-error-propagate type="APIKIT:NOT_FOUND" enableNotifications="true" logException="true" doc:name="On Error Propagate">
         <ee:transform doc:name="Transform Error Response">
