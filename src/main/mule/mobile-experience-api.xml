@@ -11,17 +11,21 @@
   <!-- GET /customers/{customerGlobalId} - Business Logic Flow -->
   <flow name="get-mobile-financial-summary-business-logic" doc:name="get-mobile-financial-summary-business-logic">
     <try doc:name="Try">
-      <ee:parallel doc:name="Parallel">
-        <http:request method="GET" config-ref="Customers_Process_API_Config" path="/api/customers/{customerGlobalId}" doc:name="Get Customer">
-          <http:uri-params><![CDATA[#[{customerGlobalId: vars.customerGlobalId}]]]></http:uri-params>
-        </http:request>
+      <ee:scatter-gather doc:name="Scatter Gather">
+        <ee:route>
+          <http:request method="GET" config-ref="Customers_Process_API_Config" path="/api/customers/{customerGlobalId}" doc:name="Get Customer">
+            <http:uri-params><![CDATA[#[{customerGlobalId: vars.customerGlobalId}]]]></http:uri-params>
+          </http:request>
+        </ee:route>
         
-        <http:request method="GET" config-ref="Bank_Accounts_Process_API_Config" path="/api/bank-accounts/accounts" doc:name="Get Financial Summary">
-          <http:query-params><![CDATA[#[{
-            "customerGlobalId": vars.customerGlobalId
-          }]]]></http:query-params>
-        </http:request>
-      </ee:parallel>
+        <ee:route>
+          <http:request method="GET" config-ref="Bank_Accounts_Process_API_Config" path="/api/bank-accounts/accounts" doc:name="Get Financial Summary">
+            <http:query-params><![CDATA[#[{
+              "customerGlobalId": vars.customerGlobalId
+            }]]]></http:query-params>
+          </http:request>
+        </ee:route>
+      </ee:scatter-gather>
 
       <ee:transform doc:name="Aggregate Financial Summary">
         <ee:message>
