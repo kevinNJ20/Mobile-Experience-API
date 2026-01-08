@@ -8,19 +8,16 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
       http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
-      http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+      http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
   <!-- APIkit Router Configuration -->
-  <apikit:config name="mobile-experience-api-config" 
-                  raml="mobile-experience-api.raml" 
-                  outboundHeadersMapName="outboundHeaders" 
-                  httpStatusVarName="httpStatus"/>
 
   <!-- Main HTTP Listener with APIkit Router -->
   <flow name="main">
     <http:listener config-ref="HTTP_Listener_config" path="/api/*" doc:name="HTTP Listener"/>
-    <apikit:router config-ref="mobile-experience-api-config" doc:name="APIkit Router"/>
-    <error-handler>
+    <apikit:router doc:name="APIkit Router" doc:id="36e7fa58-1ae8-4bee-9267-9cfa797feaab" config-ref="mobile-experience-api-config"/>
+		<error-handler>
       <on-error-propagate type="APIKIT:NOT_FOUND" enableNotifications="true" logException="true" doc:name="On Error Propagate">
         <ee:transform doc:name="Transform Error Response">
           <ee:message>
@@ -110,7 +107,7 @@ output application/json
   </flow>
 
   <!-- GET /customers/{customerGlobalId} -->
-  <flow name="get:\customers\{customerGlobalId}:mobile-experience-api-config">
+  <flow name="get:\customers\(customerGlobalId):mobile-experience-api-config">
     <set-variable value="#[attributes.uriParams.customerGlobalId]" variableName="customerGlobalId" doc:name="Set Customer Global ID"/>
     <flow-ref name="get-mobile-financial-summary-business-logic" doc:name="get-mobile-financial-summary-business-logic"/>
   </flow>

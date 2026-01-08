@@ -134,13 +134,13 @@ output application/json
     
     <try doc:name="Try">
       <http:request method="PUT" config-ref="Bank_Accounts_Process_API_Config" path="/api/bank-accounts/accounts/{accountGlobalId}/transactions/{transactionGlobalId}" doc:name="Dispute Transaction">
-        <http:uri-params><![CDATA[#[
-          {
-            "accountGlobalId": attributes.uriParams.accountGlobalId,
-            "transactionGlobalId": attributes.uriParams.transactionGlobalId
-          }
-        ]]]></http:uri-params>
-        <http:body><![CDATA[#[payload]]]></http:body>
+        <http:uri-params><![CDATA[#[%dw 2.0
+output application/java
+---
+{
+    "accountGlobalId": attributes.uriParams.accountGlobalId,
+    "transactionGlobalId": attributes.uriParams.transactionGlobalId
+  }]]]></http:uri-params>
       </http:request>
 
       <set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
@@ -173,8 +173,10 @@ output application/json
     
     <try doc:name="Try">
       <http:request method="PUT" config-ref="Bank_Accounts_Process_API_Config" path="/api/bank-accounts/cards/{cardGlobalId}" doc:name="Update Card Controls">
-        <http:uri-params><![CDATA[#[{cardGlobalId: attributes.uriParams.cardGlobalId}]]]></http:uri-params>
-        <http:body><![CDATA[#[payload]]]></http:body>
+        <http:uri-params><![CDATA[#[%dw 2.0
+output application/java
+---
+{cardGlobalId: attributes.uriParams.cardGlobalId}]]]></http:uri-params>
       </http:request>
 
       <set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
