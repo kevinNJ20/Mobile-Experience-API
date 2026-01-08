@@ -60,7 +60,7 @@ var totalBalance = accounts map ($.balance default 0) reduce ($ + $$) default 0
         </ee:message>
       </ee:transform>
 
-      <http:response statusCode="200" doc:name="HTTP Response"/>
+      <set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
       
       <error-handler>
         <on-error-propagate type="HTTP:REQUEST" enableNotifications="true" logException="true" doc:name="HTTP Error">
@@ -78,7 +78,7 @@ output application/json
 }]]></ee:set-payload>
             </ee:message>
           </ee:transform>
-          <http:response statusCode="500" doc:name="HTTP Response"/>
+          <set-variable value="500" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
         </on-error-propagate>
       </error-handler>
     </try>
@@ -94,7 +94,7 @@ output application/json
         <http:query-params><![CDATA[#[attributes.queryParams default {}]]]></http:query-params>
       </http:request>
 
-      <http:response statusCode="200" doc:name="HTTP Response"/>
+      <set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
       
       <error-handler>
         <on-error-propagate type="HTTP:REQUEST" enableNotifications="true" logException="true" doc:name="HTTP Error">
@@ -112,7 +112,7 @@ output application/json
 }]]></ee:set-payload>
             </ee:message>
           </ee:transform>
-          <http:response statusCode="500" doc:name="HTTP Response"/>
+          <set-variable value="500" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
         </on-error-propagate>
       </error-handler>
     </try>
@@ -133,7 +133,7 @@ output application/json
         <http:body><![CDATA[#[payload]]]></http:body>
       </http:request>
 
-      <http:response statusCode="200" doc:name="HTTP Response"/>
+      <set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
       
       <error-handler>
         <on-error-propagate type="HTTP:REQUEST" enableNotifications="true" logException="true" doc:name="HTTP Error">
@@ -151,7 +151,7 @@ output application/json
 }]]></ee:set-payload>
             </ee:message>
           </ee:transform>
-          <http:response statusCode="500" doc:name="HTTP Response"/>
+          <set-variable value="500" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
         </on-error-propagate>
       </error-handler>
     </try>
@@ -167,7 +167,7 @@ output application/json
         <http:body><![CDATA[#[payload]]]></http:body>
       </http:request>
 
-      <http:response statusCode="200" doc:name="HTTP Response"/>
+      <set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
       
       <error-handler>
         <on-error-propagate type="HTTP:REQUEST" enableNotifications="true" logException="true" doc:name="HTTP Error">
@@ -185,7 +185,7 @@ output application/json
 }]]></ee:set-payload>
             </ee:message>
           </ee:transform>
-          <http:response statusCode="500" doc:name="HTTP Response"/>
+          <set-variable value="500" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
         </on-error-propagate>
       </error-handler>
     </try>
