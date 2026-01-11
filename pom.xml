@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.mulesoft.app</groupId>
+    <groupId>167d12fd-a524-4ceb-9804-cb9e9ac3cdc3</groupId>
     <artifactId>mobile-experience-api</artifactId>
     <version>1.0.0</version>
     <packaging>mule-application</packaging>
