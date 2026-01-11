@@ -25,7 +25,7 @@ http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/m
   <http:request-config name="Customers_Process_API_Config" doc:name="Customers Process API Config">
     <http:request-connection host="${customers.process.api.host}" port="${customers.process.api.port}" />
   </http:request-config>
-	<apikit:config outboundHeadersMapName="outboundHeadersMapName" httpStatusVarName="httpStatus" doc:name="Router" doc:id="1e3274fc-052b-44a0-8d13-8a4c0d7d563e" name="mobile-experience-api-config" api="mobile-experience-api.raml" />
+	<apikit:config outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" doc:name="Router" doc:id="1e3274fc-052b-44a0-8d13-8a4c0d7d563e" name="mobile-experience-api-config" api="mobile-experience-api.raml" />
 
 
 </mule>
