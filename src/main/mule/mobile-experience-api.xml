@@ -13,7 +13,7 @@
     <try doc:name="Try">
       <scatter-gather doc:name="Scatter-Gather" doc:id="b7d2bb7e-1628-451d-830b-7dd8dcca4034">
         <route>
-          <http:request doc:name="Get Customer" doc:id="209b1ec3-c79a-4794-9616-cb935f2a534b" config-ref="Customers_Process_API_Config" path="/api/customers/{customerGlobalId}">
+          <http:request doc:name="Get Customer" doc:id="209b1ec3-c79a-4794-9616-cb935f2a534b" config-ref="Customers_Process_API_Config" path="/api/{customerGlobalId}">
             <http:uri-params><![CDATA[#[output application/java
 ---
 {
@@ -23,7 +23,7 @@
         </route>
         
         <route>
-          <http:request doc:name="Get Financial Summary" doc:id="b8fbb0a9-aed8-4f17-9bb4-b3facb92285a" config-ref="Bank_Accounts_Process_API_Config" path="/api/bank-accounts/accounts">
+          <http:request doc:name="Get Financial Summary" doc:id="b8fbb0a9-aed8-4f17-9bb4-b3facb92285a" config-ref="Bank_Accounts_Process_API_Config" path="/api/accounts">
             <http:query-params><![CDATA[#[output application/java
 ---
 {
@@ -99,7 +99,7 @@ output application/json
     <http:listener doc:name="GET /customers/{customerGlobalId}/accounts/{accountGlobalId}/transactions" config-ref="HTTP_Listener_config" path="/api/mobile/customers/{customerGlobalId}/accounts/{accountGlobalId}/transactions" allowedMethods="GET"/>
     
     <try doc:name="Try">
-      <http:request method="GET" config-ref="Bank_Accounts_Process_API_Config" path="/api/bank-accounts/accounts/{accountGlobalId}/transactions" doc:name="Get Transactions">
+      <http:request config-ref="Bank_Accounts_Process_API_Config" path="/api/accounts/{accountGlobalId}/transactions" doc:name="Get Transactions">
         <http:uri-params><![CDATA[#[{accountGlobalId: attributes.uriParams.accountGlobalId}]]]></http:uri-params>
         <http:query-params><![CDATA[#[attributes.queryParams default {}]]]></http:query-params>
       </http:request>
@@ -133,7 +133,7 @@ output application/json
     <http:listener doc:name="PUT /customers/{customerGlobalId}/accounts/{accountGlobalId}/transactions/{transactionGlobalId}/dispute" config-ref="HTTP_Listener_config" path="/api/mobile/customers/{customerGlobalId}/accounts/{accountGlobalId}/transactions/{transactionGlobalId}/dispute" allowedMethods="PUT"/>
     
     <try doc:name="Try">
-      <http:request method="PUT" config-ref="Bank_Accounts_Process_API_Config" path="/api/bank-accounts/accounts/{accountGlobalId}/transactions/{transactionGlobalId}" doc:name="Dispute Transaction">
+      <http:request method="PUT" config-ref="Bank_Accounts_Process_API_Config" path="/api/accounts/{accountGlobalId}/transactions/{transactionGlobalId}" doc:name="Dispute Transaction">
         <http:uri-params><![CDATA[#[%dw 2.0
 output application/java
 ---
@@ -172,7 +172,7 @@ output application/json
     <http:listener doc:name="PUT /customers/{customerGlobalId}/cards/{cardGlobalId}/controls" config-ref="HTTP_Listener_config" path="/api/mobile/customers/{customerGlobalId}/cards/{cardGlobalId}/controls" allowedMethods="PUT"/>
     
     <try doc:name="Try">
-      <http:request method="PUT" config-ref="Bank_Accounts_Process_API_Config" path="/api/bank-accounts/cards/{cardGlobalId}" doc:name="Update Card Controls">
+      <http:request method="PUT" config-ref="Bank_Accounts_Process_API_Config" path="/api/cards/{cardGlobalId}" doc:name="Update Card Controls">
         <http:uri-params><![CDATA[#[%dw 2.0
 output application/java
 ---
