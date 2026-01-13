@@ -14,7 +14,7 @@
     <try doc:name="Try">
       <scatter-gather doc:name="Scatter-Gather" doc:id="b7d2bb7e-1628-451d-830b-7dd8dcca4034">
         <route>
-          <http:request doc:name="Get Customer" doc:id="209b1ec3-c79a-4794-9616-cb935f2a534b" config-ref="Customers_Process_API_Config" path="/api/{customerGlobalId}">
+          <http:request doc:name="Get Customer" doc:id="209b1ec3-c79a-4794-9616-cb935f2a534b" config-ref="Customers_Process_API_Config" path="/api/customers/{customerGlobalId}">
             <http:uri-params><![CDATA[#[output application/java
 ---
 {
@@ -99,8 +99,11 @@ output application/json
   <flow name="get-account-transactions-business-logic" doc:name="get-account-transactions-business-logic">
     <try doc:name="Try">
       <http:request config-ref="Bank_Accounts_Process_API_Config" path="/api/accounts/{accountGlobalId}/transactions" doc:name="Get Transactions">
-        <http:uri-params><![CDATA[#[{accountGlobalId: attributes.uriParams.accountGlobalId}]]]></http:uri-params>
-        <http:query-params><![CDATA[#[attributes.queryParams default {}]]]></http:query-params>
+        <http:uri-params><![CDATA[#[{accountGlobalId: vars.accountGlobalId}]]]></http:uri-params>
+        <http:query-params><![CDATA[#[{
+          limit: vars.limit default attributes.queryParams.limit default "100",
+          offset: vars.offset default attributes.queryParams.offset default "0"
+        }]]]></http:query-params>
       </http:request>
 
       <set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
@@ -129,14 +132,25 @@ output application/json
 
   <!-- PUT /customers/{customerGlobalId}/accounts/{accountGlobalId}/transactions/{transactionGlobalId}/dispute - Dispute Transaction -->
   <flow name="dispute-transaction-business-logic" doc:name="dispute-transaction-business-logic">
+    <ee:transform doc:name="Transform Request">
+      <ee:message>
+        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  disputeStatus: payload.disputeStatus default "PENDING",
+  disputeReason: payload.disputeReason default ""
+}]]></ee:set-payload>
+      </ee:message>
+    </ee:transform>
     <try doc:name="Try">
       <http:request method="PUT" config-ref="Bank_Accounts_Process_API_Config" path="/api/accounts/{accountGlobalId}/transactions/{transactionGlobalId}" doc:name="Dispute Transaction">
         <http:uri-params><![CDATA[#[%dw 2.0
 output application/java
 ---
 {
-    "accountGlobalId": attributes.uriParams.accountGlobalId,
-    "transactionGlobalId": attributes.uriParams.transactionGlobalId
+    "accountGlobalId": vars.accountGlobalId,
+    "transactionGlobalId": vars.transactionGlobalId
   }]]]></http:uri-params>
       </http:request>
 
@@ -166,12 +180,20 @@ output application/json
 
   <!-- PUT /customers/{customerGlobalId}/cards/{cardGlobalId}/controls - Update Card Controls -->
   <flow name="update-card-controls-business-logic" doc:name="update-card-controls-business-logic">
+    <ee:transform doc:name="Ensure Body">
+      <ee:message>
+        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+if (payload != null and payload != "") payload else {}]]></ee:set-payload>
+      </ee:message>
+    </ee:transform>
     <try doc:name="Try">
       <http:request method="PUT" config-ref="Bank_Accounts_Process_API_Config" path="/api/cards/{cardGlobalId}" doc:name="Update Card Controls">
         <http:uri-params><![CDATA[#[%dw 2.0
 output application/java
 ---
-{cardGlobalId: attributes.uriParams.cardGlobalId}]]]></http:uri-params>
+{cardGlobalId: vars.cardGlobalId}]]]></http:uri-params>
       </http:request>
 
       <set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>

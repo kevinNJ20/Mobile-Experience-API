@@ -126,7 +126,7 @@ output application/json
   </flow>
 
   <!-- PUT /customers/{customerGlobalId}/accounts/{accountGlobalId}/transactions/{transactionGlobalId}/dispute -->
-  <flow name="put:\customers\(customerGlobalId)\accounts\(accountGlobalId)\transactions\(transactionGlobalId)\dispute:mobile-experience-api-config">
+  <flow name="put:\customers\(customerGlobalId)\accounts\(accountGlobalId)\transactions\(transactionGlobalId)\dispute:application\json:mobile-experience-api-config">
     <set-variable value="#[attributes.uriParams.customerGlobalId]" variableName="customerGlobalId" doc:name="Set Customer Global ID"/>
     <set-variable value="#[attributes.uriParams.accountGlobalId]" variableName="accountGlobalId" doc:name="Set Account Global ID"/>
     <set-variable value="#[attributes.uriParams.transactionGlobalId]" variableName="transactionGlobalId" doc:name="Set Transaction Global ID"/>
@@ -134,7 +134,7 @@ output application/json
   </flow>
 
   <!-- PUT /customers/{customerGlobalId}/cards/{cardGlobalId}/controls -->
-  <flow name="put:\customers\(customerGlobalId)\cards\(cardGlobalId)\controls:mobile-experience-api-config">
+  <flow name="put:\customers\(customerGlobalId)\cards\(cardGlobalId)\controls:application\json:mobile-experience-api-config">
     <set-variable value="#[attributes.uriParams.customerGlobalId]" variableName="customerGlobalId" doc:name="Set Customer Global ID"/>
     <set-variable value="#[attributes.uriParams.cardGlobalId]" variableName="cardGlobalId" doc:name="Set Card Global ID"/>
     <flow-ref name="update-card-controls-business-logic" doc:name="update-card-controls-business-logic"/>
