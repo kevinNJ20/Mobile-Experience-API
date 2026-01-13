@@ -5,6 +5,7 @@
   xmlns:http="http://www.mulesoft.org/schema/mule/http"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
   http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 ">
 
@@ -73,7 +74,7 @@ var totalBalance = accounts map ($.balance default 0) reduce ($ + $$) default 0
       <set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
       
       <error-handler>
-        <on-error-propagate type="HTTP:REQUEST" enableNotifications="true" logException="true" doc:name="HTTP Error">
+        <on-error-propagate type="HTTP:CONNECTIVITY" enableNotifications="true" logException="true" doc:name="HTTP Error">
           <ee:transform doc:name="Transform Error">
             <ee:message>
               <ee:set-payload><![CDATA[%dw 2.0
@@ -105,7 +106,7 @@ output application/json
       <set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
       
       <error-handler>
-        <on-error-propagate type="HTTP:REQUEST" enableNotifications="true" logException="true" doc:name="HTTP Error">
+        <on-error-propagate type="HTTP:CONNECTIVITY" enableNotifications="true" logException="true" doc:name="HTTP Error">
           <ee:transform doc:name="Transform Error">
             <ee:message>
               <ee:set-payload><![CDATA[%dw 2.0
@@ -142,7 +143,7 @@ output application/java
       <set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
       
       <error-handler>
-        <on-error-propagate type="HTTP:REQUEST" enableNotifications="true" logException="true" doc:name="HTTP Error">
+        <on-error-propagate type="HTTP:CONNECTIVITY" enableNotifications="true" logException="true" doc:name="HTTP Error">
           <ee:transform doc:name="Transform Error">
             <ee:message>
               <ee:set-payload><![CDATA[%dw 2.0
@@ -176,7 +177,7 @@ output application/java
       <set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
       
       <error-handler>
-        <on-error-propagate type="HTTP:REQUEST" enableNotifications="true" logException="true" doc:name="HTTP Error">
+        <on-error-propagate type="HTTP:CONNECTIVITY" enableNotifications="true" logException="true" doc:name="HTTP Error">
           <ee:transform doc:name="Transform Error">
             <ee:message>
               <ee:set-payload><![CDATA[%dw 2.0
