@@ -78,3 +78,100 @@ types:
           application/json:
             type: ErrorResponse
 
+/customers/{customerGlobalId}/accounts/{accountGlobalId}/transactions:
+  displayName: Account Transactions
+  uriParameters:
+    customerGlobalId:
+      type: string
+      description: Identifiant global unique du client
+    accountGlobalId:
+      type: string
+      description: Identifiant global unique du compte
+  get:
+    displayName: Get Account Transactions
+    description: Récupère les transactions d'un compte
+    queryParameters:
+      limit?:
+        type: integer
+        default: 100
+      offset?:
+        type: integer
+        default: 0
+    responses:
+      200:
+        body:
+          application/json:
+            type: object[]
+      400:
+        body:
+          application/json:
+            type: ErrorResponse
+      404:
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        body:
+          application/json:
+            type: ErrorResponse
+
+  /{transactionGlobalId}/dispute:
+    displayName: Dispute Transaction
+    uriParameters:
+      transactionGlobalId:
+        type: string
+        description: Identifiant global unique de la transaction
+    put:
+      displayName: Dispute Transaction
+      description: Conteste une transaction
+      responses:
+        200:
+          body:
+            application/json:
+              type: object
+        400:
+          body:
+            application/json:
+              type: ErrorResponse
+        404:
+          body:
+            application/json:
+              type: ErrorResponse
+        500:
+          body:
+            application/json:
+              type: ErrorResponse
+
+/customers/{customerGlobalId}/cards/{cardGlobalId}/controls:
+  displayName: Card Controls
+  uriParameters:
+    customerGlobalId:
+      type: string
+      description: Identifiant global unique du client
+    cardGlobalId:
+      type: string
+      description: Identifiant global unique de la carte
+  put:
+    displayName: Update Card Controls
+    description: Met à jour les contrôles d'une carte
+    body:
+      application/json:
+        type: object
+    responses:
+      200:
+        body:
+          application/json:
+            type: object
+      400:
+        body:
+          application/json:
+            type: ErrorResponse
+      404:
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        body:
+          application/json:
+            type: ErrorResponse
+
