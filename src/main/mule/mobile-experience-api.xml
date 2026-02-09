@@ -38,11 +38,11 @@
         <ee:message>
           <ee:set-payload><![CDATA[%dw 2.0
 output application/json
-var customer = payload[0]
-var financialSummary = payload[1]
+var customer = payload[0].payload
+var financialSummary = payload[1].payload
 var accounts = financialSummary.accounts default []
-var creditCards = financialSummary.creditCards default []
-var totalBalance = accounts map ($.balance default 0) reduce ($ + $$) default 0
+var cards = financialSummary.cards default []
+var totalBalance = financialSummary.totalBalance default (accounts map ($.balance default 0) reduce ($ + $$) default 0)
 ---
 {
   customer: {
@@ -60,7 +60,7 @@ var totalBalance = accounts map ($.balance default 0) reduce ($ + $$) default 0
     availableBalance: account.availableBalance,
     currency: account.currency
   }),
-  creditCards: creditCards map ((card) -> {
+  cards: cards map ((card) -> {
     globalId: card.globalId default card.id,
     cardNumber: card.cardNumber,
     cardType: card.cardType,
@@ -132,29 +132,28 @@ output application/json
 
   <!-- PUT /customers/{customerGlobalId}/accounts/{accountGlobalId}/transactions/{transactionGlobalId}/dispute - Dispute Transaction -->
   <flow name="dispute-transaction-business-logic" doc:name="dispute-transaction-business-logic">
-    <ee:transform doc:name="Transform Request">
-      <ee:message>
-        <ee:set-payload><![CDATA[%dw 2.0
+    <ee:transform doc:name="Transform Request" doc:id="d663b174-9959-4939-9556-256570d80c31" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 {
   disputeStatus: payload.disputeStatus default "PENDING",
   disputeReason: payload.disputeReason default ""
 }]]></ee:set-payload>
-      </ee:message>
-    </ee:transform>
-    <try doc:name="Try">
-      <http:request method="PUT" config-ref="Bank_Accounts_Process_API_Config" path="/api/accounts/{accountGlobalId}/transactions/{transactionGlobalId}" doc:name="Dispute Transaction">
-        <http:uri-params><![CDATA[#[%dw 2.0
+			</ee:message>
+		</ee:transform>
+		<try doc:name="Try">
+			<http:request doc:name="Dispute Transaction" doc:id="eb16b8ba-0887-48b2-9307-66f5e80ecd24" path="/api/accounts/{accountGlobalId}/transactions/{transactionGlobalId}" config-ref="Bank_Accounts_Process_API_Config" method="PUT">
+				<http:uri-params ><![CDATA[#[%dw 2.0
 output application/java
 ---
 {
     "accountGlobalId": vars.accountGlobalId,
     "transactionGlobalId": vars.transactionGlobalId
   }]]]></http:uri-params>
-      </http:request>
-
-      <set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
+			</http:request>
+			<set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
       
       <error-handler>
         <on-error-propagate type="HTTP:CONNECTIVITY" enableNotifications="true" logException="true" doc:name="HTTP Error">
@@ -185,18 +184,20 @@ output application/json
         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-if (payload != null and payload != "") payload else {}]]></ee:set-payload>
+if (payload != null and payload != "" and payload is Object) 
+  payload 
+else 
+  {}]]></ee:set-payload>
       </ee:message>
     </ee:transform>
     <try doc:name="Try">
-      <http:request method="PUT" config-ref="Bank_Accounts_Process_API_Config" path="/api/cards/{cardGlobalId}" doc:name="Update Card Controls">
-        <http:uri-params><![CDATA[#[%dw 2.0
+			<http:request doc:name="Update Card Controls" doc:id="44ec76b6-0f9a-4203-addf-8a7cb594f809" config-ref="Bank_Accounts_Process_API_Config" method="PUT" path="/api/cards/{cardGlobalId}">
+				<http:uri-params ><![CDATA[#[%dw 2.0
 output application/java
 ---
 {cardGlobalId: vars.cardGlobalId}]]]></http:uri-params>
-      </http:request>
-
-      <set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
+			</http:request>
+			<set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
       
       <error-handler>
         <on-error-propagate type="HTTP:CONNECTIVITY" enableNotifications="true" logException="true" doc:name="HTTP Error">

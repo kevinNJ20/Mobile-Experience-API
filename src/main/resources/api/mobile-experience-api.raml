@@ -42,6 +42,47 @@ types:
             creditLimit?: number
       totalBalance?: number
       totalAvailableCredit?: number
+    example:
+      customer:
+        globalId: "c1c27e05-7e59-4f39-a7f6-7ffe9ee10d64"
+        customerNumber: "CUST-000001"
+        party:
+          firstName: "John"
+          lastName: "Doe"
+      accounts:
+        - accountNumber: "ACC-123456789"
+          accountType: "Checking"
+          balance: 5000.00
+          currency: "USD"
+      cards:
+        - cardNumber: "4532-1234-5678-9010"
+          cardType: "CreditCard"
+          availableCredit: 4500.00
+          creditLimit: 5000.00
+      totalBalance: 5000.00
+      totalAvailableCredit: 4500.00
+  CardControls:
+    type: object
+    properties:
+      status?: string
+      creditLimit?: number
+      availableCredit?: number
+      controls?:
+        type: object
+        properties:
+          dailyPurchaseLimit?: number
+          dailyATMWithdrawalLimit?: number
+          internationalTransactionsEnabled?: boolean
+          onlineTransactionsEnabled?: boolean
+    example:
+      status: "Active"
+      creditLimit: 5000.00
+      availableCredit: 4500.00
+      controls:
+        dailyPurchaseLimit: 1000.00
+        dailyATMWithdrawalLimit: 500.00
+        internationalTransactionsEnabled: true
+        onlineTransactionsEnabled: true
   ErrorResponse:
     type: object
     properties:
@@ -50,6 +91,10 @@ types:
         properties:
           code: string
           message: string
+    example:
+      error:
+        code: "BAD_REQUEST"
+        message: "Invalid request parameters"
 
 /customers/{customerGlobalId}:
   displayName: Customer Financial Summary
@@ -124,6 +169,15 @@ types:
     put:
       displayName: Dispute Transaction
       description: Conteste une transaction
+      body:
+        application/json:
+          type: object
+          properties:
+            disputeStatus?: string
+            disputeReason?: string
+          example:
+            disputeStatus: "Initiated"
+            disputeReason: "Unauthorized transaction"
       responses:
         200:
           body:
@@ -156,7 +210,15 @@ types:
     description: Met à jour les contrôles d'une carte
     body:
       application/json:
-        type: object
+        type: CardControls?
+        example:
+          status: "Active"
+          creditLimit: 5000.00
+          controls:
+            dailyPurchaseLimit: 1000.00
+            dailyATMWithdrawalLimit: 500.00
+            internationalTransactionsEnabled: true
+            onlineTransactionsEnabled: true
     responses:
       200:
         body:
