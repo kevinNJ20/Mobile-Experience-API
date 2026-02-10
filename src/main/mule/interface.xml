@@ -57,7 +57,7 @@ output application/json
         </ee:transform>
       </when>
       <otherwise>
-        <apikit:router doc:name="APIkit Router" doc:id="4400807c-7998-41f0-83b5-3e21aaf9bc31" config-ref="mobile-experience-api-config"/>
+    <apikit:router doc:name="APIkit Router" doc:id="4400807c-7998-41f0-83b5-3e21aaf9bc31" config-ref="mobile-experience-api-config"/>
       </otherwise>
     </choice>
 		<error-handler>

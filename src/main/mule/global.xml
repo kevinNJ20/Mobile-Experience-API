@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+  xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
   xmlns="http://www.mulesoft.org/schema/mule/core"
   xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:http="http://www.mulesoft.org/schema/mule/http"
-  xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+  xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
   http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
   http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
   
   <!-- Configuration Properties -->
   <configuration-properties file="config.properties" doc:name="Configuration properties"/>
@@ -19,13 +20,15 @@ http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/m
 
   <!-- HTTP Request Configuration for Process APIs -->
   <http:request-config name="Bank_Accounts_Process_API_Config" doc:name="Bank Accounts Process API Config">
-    <http:request-connection host="${bank.accounts.process.api.host}" port="${bank.accounts.process.api.port}" />
+    <http:request-connection host="${bank.accounts.process.api.host}" port="${bank.accounts.process.api.port}" protocol="HTTPS" />
   </http:request-config>
 
   <http:request-config name="Customers_Process_API_Config" doc:name="Customers Process API Config">
-    <http:request-connection host="${customers.process.api.host}" port="${customers.process.api.port}" />
+    <http:request-connection host="${customers.process.api.host}" port="${customers.process.api.port}" protocol="HTTPS" />
   </http:request-config>
 	<apikit:config outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" doc:name="Router" doc:id="1e3274fc-052b-44a0-8d13-8a4c0d7d563e" name="mobile-experience-api-config" api="mobile-experience-api.raml" />
+	<api-gateway:autodiscovery apiId="20731786" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="596d668b-aa68-4a5f-97f4-6d56b28a7ae8" flowRef="main" />
+
 
 
 </mule>
