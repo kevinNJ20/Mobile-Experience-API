@@ -16,13 +16,50 @@
   <flow name="main">
     <http:listener config-ref="HTTP_Listener_config" path="/api/*" doc:name="HTTP Listener">
       <http:response statusCode="#[vars.httpStatus default 200]">
-        <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+        <http:headers><![CDATA[#[
+          (vars.outboundHeaders default {}) ++ {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With"
+          }
+        ]]]></http:headers>
       </http:response>
       <http:error-response statusCode="#[vars.httpStatus default 500]">
-        <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+        <http:headers><![CDATA[#[
+          (vars.outboundHeaders default {}) ++ {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With"
+          }
+        ]]]></http:headers>
       </http:error-response>
     </http:listener>
-    <apikit:router doc:name="APIkit Router" doc:id="4400807c-7998-41f0-83b5-3e21aaf9bc31" config-ref="mobile-experience-api-config"/>
+    <choice doc:name="Check HTTP Method">
+      <when expression="#[attributes.method == 'OPTIONS']">
+        <ee:transform doc:name="CORS Preflight Response">
+          <ee:message>
+            <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{}]]></ee:set-payload>
+          </ee:message>
+          <ee:variables>
+            <ee:set-variable variableName="httpStatus"><![CDATA[200]]></ee:set-variable>
+            <ee:set-variable variableName="outboundHeaders"><![CDATA[#[
+              {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
+                "Access-Control-Max-Age": "3600"
+              }
+            ]]]></ee:set-variable>
+          </ee:variables>
+        </ee:transform>
+      </when>
+      <otherwise>
+        <apikit:router doc:name="APIkit Router" doc:id="4400807c-7998-41f0-83b5-3e21aaf9bc31" config-ref="mobile-experience-api-config"/>
+      </otherwise>
+    </choice>
 		<error-handler>
       <on-error-propagate type="APIKIT:NOT_FOUND" enableNotifications="true" logException="true" doc:name="On Error Propagate">
         <ee:transform doc:name="Transform Error Response">
