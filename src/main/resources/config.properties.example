@@ -1,0 +1,24 @@
+# =============================================================================
+# Mobile Experience API - Configuration example
+# Copy to config.properties and adjust for your environment.
+# =============================================================================
+#
+# --- CLOUDHUB (use these when the app is deployed on CloudHub) ---
+# Customers Process API and Bank Accounts Process API must be CloudHub hostnames,
+# NOT localhost (Connection refused otherwise).
+#
+# bank.accounts.process.api.host=bank-accounts-process-api-ng6jme.9d3fd9-1.can-c1.cloudhub.io
+# bank.accounts.process.api.port=443
+# customers.process.api.host=customers-process-api-ng6jme.9d3fd9-2.can-c1.cloudhub.io
+# customers.process.api.port=443
+#
+# --- LOCAL (use these when running locally with Process APIs on localhost) ---
+#
+# bank.accounts.process.api.host=localhost
+# bank.accounts.process.api.port=8088
+# customers.process.api.host=localhost
+# customers.process.api.port=8089
+#
+# --- HTTP listener ---
+# http.port=8094
+# http.host=0.0.0.0

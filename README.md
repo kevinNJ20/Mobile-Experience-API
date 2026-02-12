@@ -21,17 +21,32 @@ Récupère le résumé financier mobile d'un client (compte + comptes + cartes).
 
 ### Connexions HTTP Requises
 
-Cette API fait des appels HTTP vers:
-- **Customers Process API** (port 8082)
-- **Bank Accounts Process API** (port 8082)
+Cette API appelle en parallèle (scatter-gather) :
+- **Customers Process API** — `GET /api/customers/{customerGlobalId}`
+- **Bank Accounts Process API** — `GET /api/accounts?customerGlobalId=...`
 
-Configurer dans `global.xml`:
-- `Customers_Process_API_Config`
-- `Bank_Accounts_Process_API_Config`
+Configurer dans `src/main/resources/config.properties` (ou via propriétés CloudHub) :
+- `customers.process.api.host`, `customers.process.api.port`
+- `bank.accounts.process.api.host`, `bank.accounts.process.api.port`
 
 ### Port
 
-- **Port HTTP**: 8083
+- **Port HTTP** : 8094 (configurable via `http.port`)
+
+### Déploiement CloudHub (important)
+
+En CloudHub, l’API **ne doit pas** appeler `localhost` : les Process APIs tournent sur d’autres instances. Si les logs CloudHub montrent **Connection refused: localhost/127.0.0.1:8088** ou **:8089**, les propriétés d’application surchargent le fichier embarqué.
+
+**À faire dans Anypoint Runtime Manager** : ouvrir l’application **mobile-experience-api** → **Properties** et définir (avec vos URLs CloudHub réelles) :
+
+| Property | Valeur (exemple CloudHub) | À ne pas utiliser |
+|----------|---------------------------|-------------------|
+| `customers.process.api.host` | `customers-process-api-ng6jme.9d3fd9-2.can-c1.cloudhub.io` | ~~localhost~~ |
+| `customers.process.api.port` | `443` | ~~8089~~ |
+| `bank.accounts.process.api.host` | `bank-accounts-process-api-ng6jme.9d3fd9-1.can-c1.cloudhub.io` | ~~localhost~~ |
+| `bank.accounts.process.api.port` | `443` | ~~8088~~ |
+
+Le `config.properties` du repo contient déjà ces URLs CloudHub. Si vous avez des propriétés **localhost** définies dans CloudHub, supprimez-les ou remplacez-les par les valeurs ci-dessus, puis redéployez ou redémarrez l’application.
 
 ## Architecture Technique
 
