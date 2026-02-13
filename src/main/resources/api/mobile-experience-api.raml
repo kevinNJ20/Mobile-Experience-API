@@ -8,6 +8,23 @@ documentation:
   - title: Overview
     content: API d'expérience mobile pour fournir une vue financière optimisée pour les applications mobiles
 
+# Client ID Enforcement (policy appliquée dans API Manager)
+securitySchemes:
+  client-id-enforcement:
+    type: Pass Through
+    describedBy:
+      headers:
+        client_id:
+          type: string
+          required: true
+          description: Client ID de l'application enregistrée dans API Manager
+        client_secret:
+          type: string
+          required: false
+          description: Client secret (si la policy l'exige)
+
+securedBy: [ client-id-enforcement ]
+
 types:
   FinancialSummary:
     type: object
