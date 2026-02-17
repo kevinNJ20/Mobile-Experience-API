@@ -29,9 +29,10 @@ Configurer dans `src/main/resources/config.properties` (ou via propriétés Clou
 - `customers.process.api.host`, `customers.process.api.port`
 - `bank.accounts.process.api.host`, `bank.accounts.process.api.port`
 
-### Port
+### Port et URLs
 
-- **Port HTTP** : 8094 (configurable via `http.port`)
+- **Port HTTP Local** : 8094 (configurable via `http.port`)
+- **URL CloudHub** : `https://mobile-experience-api-ng6jme.9d3fd9-2.can-c1.cloudhub.io`
 
 ### Déploiement CloudHub (important)
 
@@ -66,8 +67,14 @@ Puis transforme les données pour un format optimisé mobile (champs simplifiés
 
 ### GET /api/mobile/customers/{customerGlobalId}
 
+**Local:**
 ```bash
-curl -X GET "http://localhost:8083/api/mobile/customers/550e8400-e29b-41d4-a716-446655440000"
+curl -X GET "http://localhost:8094/api/customers/550e8400-e29b-41d4-a716-446655440000"
+```
+
+**CloudHub:**
+```bash
+curl -X GET "https://mobile-experience-api-ng6jme.9d3fd9-2.can-c1.cloudhub.io/api/customers/550e8400-e29b-41d4-a716-446655440000"
 ```
 
 **Response:**
