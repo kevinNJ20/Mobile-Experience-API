@@ -91,6 +91,24 @@ output application/json
           </ee:transform>
           <set-variable value="500" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
         </on-error-propagate>
+        <on-error-propagate type="HTTP:INTERNAL_SERVER_ERROR,HTTP:BAD_GATEWAY,MULE:COMPOSITE_ROUTING" enableNotifications="true" logException="true" doc:name="HTTP 500 / Composite Routing">
+          <logger level="ERROR" message="#['GET financial summary - one or more downstream APIs returned error - customerGlobalId: ' ++ (vars.customerGlobalId default 'n/a') ++ ', error: ' ++ (error.description default 'unknown')]" doc:name="Log error"/>
+          <ee:transform doc:name="Transform Error">
+            <ee:message>
+              <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  error: {
+    code: "SERVICE_ERROR",
+    message: "One or more backend services (customers or financial summary) are temporarily unavailable. Please try again later.",
+    timestamp: now()
+  }
+}]]></ee:set-payload>
+            </ee:message>
+          </ee:transform>
+          <set-variable value="502" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
+        </on-error-propagate>
       </error-handler>
     </try>
   </flow>
