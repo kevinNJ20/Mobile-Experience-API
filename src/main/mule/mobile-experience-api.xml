@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
-  xmlns="http://www.mulesoft.org/schema/mule/core"
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
   xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
   xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
   xmlns:http="http://www.mulesoft.org/schema/mule/http"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
   http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-  http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-
-http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+  http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 
   <!-- GET /customers/{customerGlobalId} - Business Logic Flow -->
   <flow name="get-mobile-financial-summary-business-logic" doc:name="get-mobile-financial-summary-business-logic">
     <try doc:name="Try">
-      <json-logger:logger doc:name="Log request" config-ref="JSON_Logger_Config" message="#['GET financial summary - customerGlobalId: ' ++ (vars.customerGlobalId default 'n/a')]" content="#[output application/json --- { operation: 'getFinancialSummary', customerGlobalId: vars.customerGlobalId default 'n/a' }]"/>
+      <logger level="INFO" message="#['GET financial summary - customerGlobalId: ' ++ (vars.customerGlobalId default 'n/a')]" doc:name="Log request"/>
       <scatter-gather doc:name="Scatter-Gather" doc:id="b7d2bb7e-1628-451d-830b-7dd8dcca4034">
         <route>
           <http:request doc:name="Get Customer" doc:id="209b1ec3-c79a-4794-9616-cb935f2a534b" config-ref="Customers_Process_API_Config" path="/api/customers/{customerGlobalId}">
@@ -72,12 +69,12 @@ var totalBalance = financialSummary.totalBalance default (accounts map ($.balanc
 }]]></ee:set-payload>
         </ee:message>
       </ee:transform>
-      <json-logger:logger doc:name="Log success" config-ref="JSON_Logger_Config" message="#['GET financial summary success - customer: ' ++ (payload.customer.name default 'n/a') ++ ', accounts: ' ++ (sizeOf(payload.accounts default [])) ++ ', cards: ' ++ (sizeOf(payload.cards default [])) ++ ', totalBalance: ' ++ (payload.totalBalance default 0)]" content="#[output application/json --- { operation: 'getFinancialSummary', customerName: payload.customer.name default null, accountsCount: sizeOf(payload.accounts default []), cardsCount: sizeOf(payload.cards default []), totalBalance: payload.totalBalance default null }]" tracePoint="AFTER_REQUEST"/>
+      <logger level="INFO" message="#['GET financial summary success - customer: ' ++ (payload.customer.name default 'n/a') ++ ', accounts: ' ++ (sizeOf(payload.accounts default [])) ++ ', cards: ' ++ (sizeOf(payload.cards default [])) ++ ', totalBalance: ' ++ (payload.totalBalance default 0)]" doc:name="Log success"/>
       <set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
       
       <error-handler>
         <on-error-propagate type="HTTP:CONNECTIVITY" enableNotifications="true" logException="true" doc:name="HTTP Error">
-          <json-logger:logger doc:name="Log error" config-ref="JSON_Logger_Config" message="#['GET financial summary failed - customerGlobalId: ' ++ (vars.customerGlobalId default 'n/a') ++ ', error: ' ++ (error.description default 'unknown')]" content="#[output application/json --- { operation: 'getFinancialSummary', customerGlobalId: vars.customerGlobalId default 'n/a', errorDescription: error.description default 'unknown', errorType: (error.errorType.namespace ++ '::' ++ error.errorType.identifier) default 'unknown' }]" tracePoint="EXCEPTION" priority="ERROR"/>
+          <logger level="ERROR" message="#['GET financial summary failed - customerGlobalId: ' ++ (vars.customerGlobalId default 'n/a') ++ ', error: ' ++ (error.description default 'unknown')]" doc:name="Log error"/>
           <ee:transform doc:name="Transform Error">
             <ee:message>
               <ee:set-payload><![CDATA[%dw 2.0
@@ -101,7 +98,7 @@ output application/json
   <!-- GET /customers/{customerGlobalId}/accounts/{accountGlobalId}/transactions - Get Transactions -->
   <flow name="get-account-transactions-business-logic" doc:name="get-account-transactions-business-logic">
     <try doc:name="Try">
-      <json-logger:logger doc:name="Log request" config-ref="JSON_Logger_Config" message="#['GET transactions - accountGlobalId: ' ++ (vars.accountGlobalId default 'n/a') ++ ', limit: ' ++ (vars.limit default attributes.queryParams.limit default '100')]" content="#[output application/json --- { operation: 'getTransactions', accountGlobalId: vars.accountGlobalId default 'n/a', limit: vars.limit default attributes.queryParams.limit default '100', offset: vars.offset default attributes.queryParams.offset default '0' }]"/>
+      <logger level="INFO" message="#['GET transactions - accountGlobalId: ' ++ (vars.accountGlobalId default 'n/a') ++ ', limit: ' ++ (vars.limit default attributes.queryParams.limit default '100')]" doc:name="Log request"/>
       <http:request config-ref="Bank_Accounts_Process_API_Config" path="/api/accounts/{accountGlobalId}/transactions" doc:name="Get Transactions">
         <http:uri-params><![CDATA[#[{accountGlobalId: vars.accountGlobalId}]]]></http:uri-params>
         <http:query-params><![CDATA[#[{
@@ -110,12 +107,12 @@ output application/json
         }]]]></http:query-params>
       </http:request>
 
-      <json-logger:logger doc:name="Log success" config-ref="JSON_Logger_Config" message="#['GET transactions success - accountGlobalId: ' ++ (vars.accountGlobalId default 'n/a')]" content="#[output application/json --- { operation: 'getTransactions', accountGlobalId: vars.accountGlobalId default 'n/a', transactionsCount: if (payload is Array) sizeOf(payload) else (if (payload is Object and payload.transactions != null) sizeOf(payload.transactions) else null) }]" tracePoint="AFTER_REQUEST"/>
+      <logger level="INFO" message="#['GET transactions success - accountGlobalId: ' ++ (vars.accountGlobalId default 'n/a')]" doc:name="Log success"/>
       <set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
       
       <error-handler>
         <on-error-propagate type="HTTP:CONNECTIVITY" enableNotifications="true" logException="true" doc:name="HTTP Error">
-          <json-logger:logger doc:name="Log error" config-ref="JSON_Logger_Config" message="#['GET transactions failed - accountGlobalId: ' ++ (vars.accountGlobalId default 'n/a') ++ ', error: ' ++ (error.description default 'unknown')]" content="#[output application/json --- { operation: 'getTransactions', accountGlobalId: vars.accountGlobalId default 'n/a', errorDescription: error.description default 'unknown', errorType: (error.errorType.namespace ++ '::' ++ error.errorType.identifier) default 'unknown' }]" priority="ERROR" tracePoint="EXCEPTION"/>
+          <logger level="ERROR" message="#['GET transactions failed - accountGlobalId: ' ++ (vars.accountGlobalId default 'n/a') ++ ', error: ' ++ (error.description default 'unknown')]" doc:name="Log error"/>
           <ee:transform doc:name="Transform Error">
             <ee:message>
               <ee:set-payload><![CDATA[%dw 2.0
@@ -138,7 +135,7 @@ output application/json
 
   <!-- PUT /customers/{customerGlobalId}/accounts/{accountGlobalId}/transactions/{transactionGlobalId}/dispute - Dispute Transaction -->
   <flow name="dispute-transaction-business-logic" doc:name="dispute-transaction-business-logic">
-    <json-logger:logger doc:name="Log request" config-ref="JSON_Logger_Config" message="#['PUT dispute - accountGlobalId: ' ++ (vars.accountGlobalId default 'n/a') ++ ', transactionGlobalId: ' ++ (vars.transactionGlobalId default 'n/a') ++ ', disputeStatus: ' ++ (payload.disputeStatus default 'n/a')]" content="#[output application/json --- { operation: 'disputeTransaction', accountGlobalId: vars.accountGlobalId default 'n/a', transactionGlobalId: vars.transactionGlobalId default 'n/a', disputeStatus: payload.disputeStatus default 'n/a', disputeReason: payload.disputeReason default null }]"/>
+    <logger level="INFO" message="#['PUT dispute - accountGlobalId: ' ++ (vars.accountGlobalId default 'n/a') ++ ', transactionGlobalId: ' ++ (vars.transactionGlobalId default 'n/a') ++ ', disputeStatus: ' ++ (payload.disputeStatus default 'n/a')]" doc:name="Log request"/>
     <ee:transform doc:name="Transform Request" doc:id="d663b174-9959-4939-9556-256570d80c31" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -160,12 +157,12 @@ output application/java
     "transactionGlobalId": vars.transactionGlobalId
   }]]]></http:uri-params>
 			</http:request>
-			<json-logger:logger doc:name="Log success" config-ref="JSON_Logger_Config" message="#['PUT dispute success - transactionGlobalId: ' ++ (vars.transactionGlobalId default 'n/a')]" content="#[output application/json --- { operation: 'disputeTransaction', transactionGlobalId: vars.transactionGlobalId default 'n/a' }]" tracePoint="AFTER_REQUEST"/>
+			<logger level="INFO" message="#['PUT dispute success - transactionGlobalId: ' ++ (vars.transactionGlobalId default 'n/a')]" doc:name="Log success"/>
 			<set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
       
       <error-handler>
         <on-error-propagate type="HTTP:CONNECTIVITY" enableNotifications="true" logException="true" doc:name="HTTP Error">
-          <json-logger:logger doc:name="Log error" config-ref="JSON_Logger_Config" message="#['PUT dispute failed - transactionGlobalId: ' ++ (vars.transactionGlobalId default 'n/a') ++ ', error: ' ++ (error.description default 'unknown')]" content="#[output application/json --- { operation: 'disputeTransaction', transactionGlobalId: vars.transactionGlobalId default 'n/a', errorDescription: error.description default 'unknown', errorType: (error.errorType.namespace ++ '::' ++ error.errorType.identifier) default 'unknown' }]" tracePoint="EXCEPTION" priority="ERROR"/>
+          <logger level="ERROR" message="#['PUT dispute failed - transactionGlobalId: ' ++ (vars.transactionGlobalId default 'n/a') ++ ', error: ' ++ (error.description default 'unknown')]" doc:name="Log error"/>
           <ee:transform doc:name="Transform Error">
             <ee:message>
               <ee:set-payload><![CDATA[%dw 2.0
@@ -188,7 +185,7 @@ output application/json
 
   <!-- PUT /customers/{customerGlobalId}/cards/{cardGlobalId}/controls - Update Card Controls -->
   <flow name="update-card-controls-business-logic" doc:name="update-card-controls-business-logic">
-    <json-logger:logger doc:name="Log request" config-ref="JSON_Logger_Config" message="#['PUT card controls - cardGlobalId: ' ++ (vars.cardGlobalId default 'n/a')]" content="#[output application/json --- { operation: 'updateCardControls', cardGlobalId: vars.cardGlobalId default 'n/a' }]"/>
+    <logger level="INFO" message="#['PUT card controls - cardGlobalId: ' ++ (vars.cardGlobalId default 'n/a')]" doc:name="Log request"/>
     <ee:transform doc:name="Ensure Body">
       <ee:message>
         <ee:set-payload><![CDATA[%dw 2.0
@@ -207,12 +204,12 @@ output application/java
 ---
 {cardGlobalId: vars.cardGlobalId}]]]></http:uri-params>
 			</http:request>
-			<json-logger:logger doc:name="Log success" config-ref="JSON_Logger_Config" message="#['PUT card controls success - cardGlobalId: ' ++ (vars.cardGlobalId default 'n/a')]" content="#[output application/json --- { operation: 'updateCardControls', cardGlobalId: vars.cardGlobalId default 'n/a' }]" tracePoint="AFTER_REQUEST"/>
+			<logger level="INFO" message="#['PUT card controls success - cardGlobalId: ' ++ (vars.cardGlobalId default 'n/a')]" doc:name="Log success"/>
 			<set-variable value="200" doc:name="httpStatus" doc:id="d3d4a356-1b30-4ea3-bf48-82e66c597694" variableName="httpStatus"/>
       
       <error-handler>
         <on-error-propagate type="HTTP:CONNECTIVITY" enableNotifications="true" logException="true" doc:name="HTTP Error">
-          <json-logger:logger doc:name="Log error" config-ref="JSON_Logger_Config" message="#['PUT card controls failed - cardGlobalId: ' ++ (vars.cardGlobalId default 'n/a') ++ ', error: ' ++ (error.description default 'unknown')]" content="#[output application/json --- { operation: 'updateCardControls', cardGlobalId: vars.cardGlobalId default 'n/a', errorDescription: error.description default 'unknown', errorType: (error.errorType.namespace ++ '::' ++ error.errorType.identifier) default 'unknown' }]" tracePoint="EXCEPTION" priority="ERROR"/>
+          <logger level="ERROR" message="#['PUT card controls failed - cardGlobalId: ' ++ (vars.cardGlobalId default 'n/a') ++ ', error: ' ++ (error.description default 'unknown')]" doc:name="Log error"/>
           <ee:transform doc:name="Transform Error">
             <ee:message>
               <ee:set-payload><![CDATA[%dw 2.0
